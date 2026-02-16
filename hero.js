@@ -427,18 +427,57 @@
           `<span class="dim">A personalized</span> <span class="accent">star map</span> <span class="dim">generated from your date, location and story.</span>`,
           `<span class="dim">Perfect for gifts, anniversaries, milestones, and memories.</span>`,
           `<span class="dim">Get your star map for just <span class="accent">$1</span> — one of the best prices online.</span>`,
-          `<a class="btn" href="https://skymap.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open SkyMap</a>`
-
+          `<a class="btn" href="https://eduardojmnz.github.io/skymap" target="_blank" rel="noopener noreferrer">Open SkyMap</a>`
         ]);
         break;
 
 case "solutions":
         await faxPrint("solutions", "SOLUTIONS", [
-          `<span class="dim">We design and build end-to-end digital products—fast, scalable, and performance-first.</span>`,
-          `<span class="accent">Web Development</span> <span class="dim">— landing pages, websites, e-commerce, web apps, APIs, integrations</span>`,
-          `<span class="accent">App Development</span> <span class="dim">— iOS, Android, cross-platform, backend, dashboards</span>`,
-          `<span class="accent">SEO</span> <span class="dim">— technical SEO, Core Web Vitals, on-page, content structure, analytics</span>`
-        ]);
+                  `<span class="dim">We design and build end-to-end digital products—fast, scalable, and performance-first.</span>`,
+                  `<div class="sol-grid">
+                    <div class="sol-card">
+                      <div class="sol-head">
+                        <span class="sol-tag">[WEB]</span>
+                        <span class="sol-title">LANDING / E-COMMERCE</span>
+                        <span class="sol-status">READY</span>
+                      </div>
+                      <div class="sol-body">
+                        <div>+ Design & build fast</div>
+                        <div>+ Performance + Core Web Vitals</div>
+                        <div>+ Integrations: forms / analytics</div>
+                      </div>
+                      <div class="sol-cmd"><span class="dim">cmd:</span> <span class="accent">/contact</span> <span class="dim">--service web</span></div>
+                    </div>
+        
+                    <div class="sol-card">
+                      <div class="sol-head">
+                        <span class="sol-tag">[APP]</span>
+                        <span class="sol-title">MOBILE / WEB APP</span>
+                        <span class="sol-status">READY</span>
+                      </div>
+                      <div class="sol-body">
+                        <div>+ MVPs, dashboards, admin panels</div>
+                        <div>+ Auth, payments, APIs</div>
+                        <div>+ Deploy & maintenance</div>
+                      </div>
+                      <div class="sol-cmd"><span class="dim">cmd:</span> <span class="accent">/contact</span> <span class="dim">--service app</span></div>
+                    </div>
+        
+                    <div class="sol-card">
+                      <div class="sol-head">
+                        <span class="sol-tag">[SEO]</span>
+                        <span class="sol-title">SEARCH OPTIMIZATION</span>
+                        <span class="sol-status">READY</span>
+                      </div>
+                      <div class="sol-body">
+                        <div>+ Technical audit</div>
+                        <div>+ Content + structure</div>
+                        <div>+ Indexing + analytics</div>
+                      </div>
+                      <div class="sol-cmd"><span class="dim">cmd:</span> <span class="accent">/contact</span> <span class="dim">--service seo</span></div>
+                    </div>
+                  </div>`
+                ]);
         break;
 
 case "work":
