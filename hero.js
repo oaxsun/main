@@ -427,7 +427,8 @@
           `<span class="dim">A personalized</span> <span class="accent">star map</span> <span class="dim">generated from your date, location and story.</span>`,
           `<span class="dim">Perfect for gifts, anniversaries, milestones, and memories.</span>`,
           `<span class="dim">Get your star map for just <span class="accent">$1</span> — one of the best prices online.</span>`,
-          `<a class="btn" href="https://eduardojmnz.github.io/skymap" target="_blank" rel="noopener noreferrer">Open SkyMap</a>`
+          `<a class="btn" href="https://skymap.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open SkyMap</a>`
+
         ]);
         break;
 
