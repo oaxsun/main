@@ -662,3 +662,78 @@ body::after{
   }
   .loader-center .bar{ white-space: nowrap; }
 }
+
+
+
+/* Solutions cards (MS-DOS / console style) */
+.sol-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap:12px;
+  margin-top:10px;
+}
+
+.sol-card{
+  border:1px solid rgba(110,170,255,0.18);
+  border-radius:14px;
+  background: rgba(0,0,0,0.22);
+  box-shadow: 0 0 0 1px rgba(110,170,255,0.06) inset;
+  padding:12px 12px 10px;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.sol-card:hover{
+  transform: translateY(-2px);
+  border-color: rgba(110,170,255,0.32);
+  box-shadow:
+    0 0 0 1px rgba(110,170,255,0.10) inset,
+    0 18px 40px rgba(0,0,0,0.40);
+}
+
+.sol-head{
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  padding-bottom:8px;
+  border-bottom:1px solid rgba(110,170,255,0.14);
+  margin-bottom:10px;
+}
+
+.sol-tag{
+  font-size:11px;
+  letter-spacing:0.12em;
+  color: rgba(235,245,255,0.86);
+}
+
+.sol-title{
+  font-size:12px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color: rgba(235,245,255,0.86);
+  flex:1;
+}
+
+.sol-status{
+  font-size:10px;
+  letter-spacing:0.18em;
+  color: rgba(110,255,190,0.85);
+  text-transform:uppercase;
+}
+
+.sol-body{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:12px;
+  color: rgba(235,245,255,0.86);
+}
+
+.sol-cmd{
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px dashed rgba(110,170,255,0.14);
+  font-size:12px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
