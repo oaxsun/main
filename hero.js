@@ -18,7 +18,6 @@
     }, { passive:false });
   }
 
-
   // === Intro flow (loader -> splash -> enter -> loader -> app) ===
   const appEl = document.getElementById("app");
   const introEl = document.getElementById("intro");
@@ -66,7 +65,6 @@
     await new Promise(r=>setTimeout(r, 220));
   }
 
-
   function introParallaxBind(){
     if(!introEl || !introSplash) return;
     const fine = window.matchMedia?.("(pointer: fine)").matches;
@@ -108,25 +106,22 @@
     appEl.style.pointerEvents = "auto";
     boot();
     // Start intro loader on first visit
-  (async () => {
-    introParallaxBind();
-    await showSplash();
+    (async () => {
+      introParallaxBind();
+      await showSplash();
 
-    // Enter button triggers the console load
-    enterBtn?.addEventListener("click", async (e)=>{
-      e.preventDefault();
-      // Disable button while loading
-      enterBtn.style.pointerEvents = "none";
-      enterBtn.style.opacity = "0.7";
-      await enterApp();
-    });
-  })();
+      // Enter button triggers the console load
+      enterBtn?.addEventListener("click", async (e)=>{
+        e.preventDefault();
+        // Disable button while loading
+        enterBtn.style.pointerEvents = "none";
+        enterBtn.style.opacity = "0.7";
+        await enterApp();
+      });
+    })();
   }
 
-    
-
-
-  const COMMANDS = ["about", "skymap", "solutions", "contact", "help"];
+  const COMMANDS = ["about", "products", "solutions", "contact", "help"];
 
   const isTouch =
     window.matchMedia?.("(pointer: coarse)").matches ||
@@ -152,7 +147,7 @@
   let busy = false;
 
   const ASCII = {
-        ABOUT: ` █████╗ ██████╗  ██████╗ ██╗   ██╗████████╗
+    ABOUT: ` █████╗ ██████╗  ██████╗ ██╗   ██╗████████╗
 ██╔══██╗██╔══██╗██╔═══██╗██║   ██║╚══██╔══╝
 ███████║██████╔╝██║   ██║██║   ██║   ██║
 ██╔══██║██╔══██╗██║   ██║██║   ██║   ██║
@@ -388,7 +383,7 @@
     await wait(400);
 
     const box = blockContainer();
-    box.innerHTML = `<div class="line">Welcome to <span class="accent">Oaxsun Technologies</span>. Here you can discover who we are and what we have to offer you.</div><div class="line">&nbsp;</div><div class="line dim">Available commands:</div><div class="line"><span class="accent">/about</span> <span class="accent">/skymap</span> <span class="accent">/solutions</span> <span class="accent">/contact</span> <span class="accent">/help</span></div><div class="line">&nbsp;</div><div class="line dim">Enter a command to start. . .</div>`;
+    box.innerHTML = `<div class="line">Welcome to <span class="accent">Oaxsun Technologies</span>. Here you can discover who we are and what we have to offer you.</div><div class="line">&nbsp;</div><div class="line dim">Available commands:</div><div class="line"><span class="accent">/about</span> <span class="accent">/products</span> <span class="accent">/solutions</span> <span class="accent">/contact</span> <span class="accent">/help</span></div><div class="line">&nbsp;</div><div class="line dim">Enter a command to start. . .</div>`;
   }
 
   function wait(ms){ return new Promise(r=>setTimeout(r, ms)); }
@@ -406,7 +401,7 @@
     }
 
     switch(cmd){
-      
+
       case "about":
         await faxPrint("about", "ABOUT", [
           `<span class="dim">We are</span> <span class="accent">Oaxsun Technologies</span><span class="dim">, proudly founded in</span> <span class="accent">Toronto, Canada</span><span class="dim">.</span>`,
@@ -420,67 +415,105 @@
         ]);
         break;
 
-      
-      
-      case "skymap":
-        await faxPrint("skymap", "SKYMAP", [
-          `<span class="dim">A personalized</span> <span class="accent">star map</span> <span class="dim">generated from your date, location and story.</span>`,
-          `<span class="dim">Perfect for gifts, anniversaries, milestones, and memories.</span>`,
-          `<span class="dim">Get your star map for just <span class="accent">$1</span> — one of the best prices online.</span>`,
-          `<a class="btn" href="https://skymap.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open SkyMap</a>`
+      case "products":
+        await faxPrint("products", "PRODUCTS", [
+          `<span class="dim">Explore our online products built by</span> <span class="accent">Oaxsun Technologies</span><span class="dim">.</span>`,
+          `<div class="sol-grid">
+            <div class="sol-card">
+              <div class="sol-head">
+                <span class="sol-tag">[MAP]</span>
+                <span class="sol-title">SKYMAP</span>
+                <span class="sol-status">ONLINE</span>
+              </div>
+              <div class="sol-body">
+                <div>+ Personalized star map generator</div>
+                <div>+ Date, location and story based</div>
+                <div>+ Great for gifts and milestones</div>
+              </div>
+              <div class="sol-cmd"><span class="dim">url:</span> <a class="accent-link" href="https://skymap.oaxsun.tech" target="_blank" rel="noopener noreferrer">skymap.oaxsun.tech</a></div>
+            </div>
+
+            <div class="sol-card">
+              <div class="sol-head">
+                <span class="sol-tag">[TEXT]</span>
+                <span class="sol-title">GRAMATIA</span>
+                <span class="sol-status">ONLINE</span>
+              </div>
+              <div class="sol-body">
+                <div>+ Online spelling corrector</div>
+                <div>+ Fast text review</div>
+                <div>+ Simple and accessible workflow</div>
+              </div>
+              <div class="sol-cmd"><span class="dim">url:</span> <a class="accent-link" href="https://gramatia.oaxsun.tech" target="_blank" rel="noopener noreferrer">gramatia.oaxsun.tech</a></div>
+            </div>
+
+            <div class="sol-card">
+              <div class="sol-head">
+                <span class="sol-tag">[PDF]</span>
+                <span class="sol-title">COMPRESSO</span>
+                <span class="sol-status">ONLINE</span>
+              </div>
+              <div class="sol-body">
+                <div>+ Compress PDF online</div>
+                <div>+ Simple upload and download flow</div>
+                <div>+ Built for speed and convenience</div>
+              </div>
+              <div class="sol-cmd"><span class="dim">url:</span> <a class="accent-link" href="https://compresso.oaxsun.tech" target="_blank" rel="noopener noreferrer">compresso.oaxsun.tech</a></div>
+            </div>
+          </div>`
         ]);
         break;
 
-case "solutions":
+      case "solutions":
         await faxPrint("solutions", "SOLUTIONS", [
-                  `<span class="dim">We design and build end-to-end digital products—fast, scalable, and performance-first.</span>`,
-                  `<div class="sol-grid">
-                    <div class="sol-card">
-                      <div class="sol-head">
-                        <span class="sol-tag">[WEB]</span>
-                        <span class="sol-title">LANDING / E-COMMERCE</span>
-                        <span class="sol-status">READY</span>
-                      </div>
-                      <div class="sol-body">
-                        <div>+ Design & build fast</div>
-                        <div>+ Performance + Core Web Vitals</div>
-                        <div>+ Integrations: forms / analytics</div>
-                      </div>
-                      <div class="sol-cmd"><span class="dim">cmd:</span> <span class="accent">/contact</span> <span class="dim">--service web</span></div>
-                    </div>
-        
-                    <div class="sol-card">
-                      <div class="sol-head">
-                        <span class="sol-tag">[APP]</span>
-                        <span class="sol-title">MOBILE / WEB APP</span>
-                        <span class="sol-status">READY</span>
-                      </div>
-                      <div class="sol-body">
-                        <div>+ MVPs, dashboards, admin panels</div>
-                        <div>+ Auth, payments, APIs</div>
-                        <div>+ Deploy & maintenance</div>
-                      </div>
-                      <div class="sol-cmd"><span class="dim">cmd:</span> <span class="accent">/contact</span> <span class="dim">--service app</span></div>
-                    </div>
-        
-                    <div class="sol-card">
-                      <div class="sol-head">
-                        <span class="sol-tag">[SEO]</span>
-                        <span class="sol-title">SEARCH OPTIMIZATION</span>
-                        <span class="sol-status">READY</span>
-                      </div>
-                      <div class="sol-body">
-                        <div>+ Technical audit</div>
-                        <div>+ Content + structure</div>
-                        <div>+ Indexing + analytics</div>
-                      </div>
-                      <div class="sol-cmd"><span class="dim">cmd:</span> <span class="accent">/contact</span> <span class="dim">--service seo</span></div>
-                    </div>
-                  </div>`
-                ]);
+          `<span class="dim">We design and build end-to-end digital products—fast, scalable, and performance-first.</span>`,
+          `<div class="sol-grid">
+            <div class="sol-card">
+              <div class="sol-head">
+                <span class="sol-tag">[WEB]</span>
+                <span class="sol-title">LANDING / E-COMMERCE</span>
+                <span class="sol-status">READY</span>
+              </div>
+              <div class="sol-body">
+                <div>+ Design & build fast</div>
+                <div>+ Performance + Core Web Vitals</div>
+                <div>+ Integrations: forms / analytics</div>
+              </div>
+              <div class="sol-cmd"><span class="dim">cmd:</span> <span class="accent">/contact</span> <span class="dim">--service web</span></div>
+            </div>
+
+            <div class="sol-card">
+              <div class="sol-head">
+                <span class="sol-tag">[APP]</span>
+                <span class="sol-title">MOBILE / WEB APP</span>
+                <span class="sol-status">READY</span>
+              </div>
+              <div class="sol-body">
+                <div>+ MVPs, dashboards, admin panels</div>
+                <div>+ Auth, payments, APIs</div>
+                <div>+ Deploy & maintenance</div>
+              </div>
+              <div class="sol-cmd"><span class="dim">cmd:</span> <span class="accent">/contact</span> <span class="dim">--service app</span></div>
+            </div>
+
+            <div class="sol-card">
+              <div class="sol-head">
+                <span class="sol-tag">[SEO]</span>
+                <span class="sol-title">SEARCH OPTIMIZATION</span>
+                <span class="sol-status">READY</span>
+              </div>
+              <div class="sol-body">
+                <div>+ Technical audit</div>
+                <div>+ Content + structure</div>
+                <div>+ Indexing + analytics</div>
+              </div>
+              <div class="sol-cmd"><span class="dim">cmd:</span> <span class="accent">/contact</span> <span class="dim">--service seo</span></div>
+            </div>
+          </div>`
+        ]);
         break;
 
-case "work":
+      case "work":
         await faxPrint("work", "WORK", [
           `<span class="dim">Selected projects and case studies.</span>`,
           `<span class="dim">(placeholder)</span>`
@@ -497,7 +530,7 @@ case "work":
       case "help":
         await faxPrint("help", "HELP", [
           `<span class="dim">Commands:</span>`,
-          `<span class="accent">/about</span> <span class="accent">/skymap</span> <span class="accent">/solutions</span> <span class="accent">/contact</span> <span class="accent">/help</span>`,
+          `<span class="accent">/about</span> <span class="accent">/products</span> <span class="accent">/solutions</span> <span class="accent">/contact</span> <span class="accent">/help</span>`,
           `<span class="dim">&nbsp;</span>`,
           `<span class="dim">OAXSUN Technologies 2026 (c) All rights reserved.</span>`
         ]);
@@ -506,7 +539,7 @@ case "work":
   }
 
   function niceLabel(cmd){
-    if(cmd === "skymap") return "SkyMap";
+    if(cmd === "products") return "Products";
     return cmd.charAt(0).toUpperCase() + cmd.slice(1);
   }
 
