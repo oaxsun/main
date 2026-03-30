@@ -431,6 +431,9 @@
                 <div>+ Great for gifts and milestones</div>
               </div>
               <div class="sol-cmd"><span class="dim">url:</span> <a class="accent-link" href="https://skymap.oaxsun.tech" target="_blank" rel="noopener noreferrer">skymap.oaxsun.tech</a></div>
+              <div style="margin-top:14px;">
+                <a class="btn" href="https://skymap.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open SkyMap</a>
+              </div>
             </div>
 
             <div class="sol-card">
@@ -445,6 +448,9 @@
                 <div>+ Simple and accessible workflow</div>
               </div>
               <div class="sol-cmd"><span class="dim">url:</span> <a class="accent-link" href="https://gramatia.oaxsun.tech" target="_blank" rel="noopener noreferrer">gramatia.oaxsun.tech</a></div>
+              <div style="margin-top:14px;">
+                <a class="btn" href="https://gramatia.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open Gramatia</a>
+              </div>
             </div>
 
             <div class="sol-card">
@@ -459,6 +465,9 @@
                 <div>+ Built for speed and convenience</div>
               </div>
               <div class="sol-cmd"><span class="dim">url:</span> <a class="accent-link" href="https://compresso.oaxsun.tech" target="_blank" rel="noopener noreferrer">compresso.oaxsun.tech</a></div>
+              <div style="margin-top:14px;">
+                <a class="btn" href="https://compresso.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open Compresso</a>
+              </div>
             </div>
           </div>`
         ]);
