@@ -7,7 +7,17 @@
   </url>
 
   <url>
-    <loc>https://oaxsun.tech/index.html</loc>
+    <loc>https://skymap.oaxsun.tech/</loc>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://compresso.oaxsun.tech/</loc>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gramatia.oaxsun.tech/</loc>
     <priority>0.9</priority>
   </url>
 
