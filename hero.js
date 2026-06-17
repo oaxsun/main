@@ -417,58 +417,58 @@
 
       case "products":
         await faxPrint("products", "PRODUCTS", [
-          `<span class="dim">Explore our online products built by</span> <span class="accent">Oaxsun Technologies</span><span class="dim">.</span>`,
-          `<div class="sol-grid">
-            <div class="sol-card">
-              <div class="sol-head">
-                <span class="sol-tag">[MAP]</span>
-                <span class="sol-title">SKYMAP</span>
-                <span class="sol-status">ONLINE</span>
+          `<p class="products-description">Explore our online products built by Oaxsun Technologies.</p><div class="products-grid">
+            <article class="product-card product-featured">
+              <div class="product-media has-image">
+                <img src="assets/products/skymap-preview.png" alt="SkyMap constellation preview">
+                <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
               </div>
-              <div class="sol-body">
-                <div>+ Personalized star map generator</div>
-                <div>+ Date, location and story based</div>
-                <div>+ Great for gifts and milestones</div>
+              <div class="product-info">
+                <div class="product-kicker">[MAP]</div>
+                <h3>SKYMAP</h3>
+                <p>Personalized star map generator based on your special moments.</p>
+                <a class="btn product-btn" href="https://skymap.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open SkyMap</a>
               </div>
-              <div class="sol-cmd"><span class="dim">url:</span> <a class="accent-link" href="https://skymap.oaxsun.tech" target="_blank" rel="noopener noreferrer">skymap.oaxsun.tech</a></div>
-              <div style="margin-top:14px;">
-                <a class="btn" href="https://skymap.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open SkyMap</a>
-              </div>
-            </div>
+            </article>
 
-            <div class="sol-card">
-              <div class="sol-head">
-                <span class="sol-tag">[TEXT]</span>
-                <span class="sol-title">GRAMATIA</span>
-                <span class="sol-status">ONLINE</span>
+            <article class="product-card product-featured">
+              <div class="product-media has-image">
+                <img src="assets/products/korah-preview.png" alt="Korah payments dashboard preview">
+                <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
               </div>
-              <div class="sol-body">
-                <div>+ Online spelling corrector</div>
-                <div>+ Fast text review</div>
-                <div>+ Simple and accessible workflow</div>
+              <div class="product-info">
+                <div class="product-kicker">[PAYMENTS]</div>
+                <h3>KORAH</h3>
+                <p>Payment tracking and reminders to confirm what you already paid.</p>
+                <a class="btn product-btn" href="https://korah.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open Korah</a>
               </div>
-              <div class="sol-cmd"><span class="dim">url:</span> <a class="accent-link" href="https://gramatia.oaxsun.tech" target="_blank" rel="noopener noreferrer">gramatia.oaxsun.tech</a></div>
-              <div style="margin-top:14px;">
-                <a class="btn" href="https://gramatia.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open Gramatia</a>
-              </div>
-            </div>
+            </article>
 
-            <div class="sol-card">
-              <div class="sol-head">
-                <span class="sol-tag">[PDF]</span>
-                <span class="sol-title">COMPRESSO</span>
-                <span class="sol-status">ONLINE</span>
+            <article class="product-card">
+              <div class="product-media has-image">
+                <img src="assets/products/compresso-preview.png" alt="Compresso PDF compression preview">
+                <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
               </div>
-              <div class="sol-body">
-                <div>+ Compress PDF online</div>
-                <div>+ Simple upload and download flow</div>
-                <div>+ Built for speed and convenience</div>
+              <div class="product-info">
+                <div class="product-kicker">[PDF]</div>
+                <h3>COMPRESSO</h3>
+                <p>Compress PDF files online. Simple, fast and secure.</p>
+                <a class="btn product-btn" href="https://compresso.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open Compresso</a>
               </div>
-              <div class="sol-cmd"><span class="dim">url:</span> <a class="accent-link" href="https://compresso.oaxsun.tech" target="_blank" rel="noopener noreferrer">compresso.oaxsun.tech</a></div>
-              <div style="margin-top:14px;">
-                <a class="btn" href="https://compresso.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open Compresso</a>
+            </article>
+
+            <article class="product-card">
+              <div class="product-media has-image">
+                <img src="assets/products/gramatia-preview.png" alt="Gramatia document review preview">
+                <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
               </div>
-            </div>
+              <div class="product-info">
+                <div class="product-kicker">[AI]</div>
+                <h3>GRAMATIA</h3>
+                <p>AI-powered spelling and grammar assistant for flawless writing.</p>
+                <a class="btn product-btn" href="https://gramatia.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open Gramatia</a>
+              </div>
+            </article>
           </div>`
         ]);
         break;
