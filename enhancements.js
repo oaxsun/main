@@ -1,7 +1,9 @@
 (() => {
   const termBody = document.getElementById("termBody");
   const input = document.getElementById("cmd");
-  if (!termBody || !input) return;
+  const termInput = document.getElementById("termInput");
+  const suggest = document.getElementById("suggest");
+  if (!termBody || !input || !termInput || !suggest) return;
 
   const solutionCopy = {
     "WEB SYSTEMS": {
@@ -27,6 +29,13 @@
   };
 
   function runContactCommand() {
+    termInput.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true }));
+    const contactItem = [...suggest.querySelectorAll(".item")].find(item => item.textContent.trim().toLowerCase() === "/contact");
+    if (contactItem) {
+      contactItem.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true }));
+      return;
+    }
+
     input.removeAttribute("readonly");
     input.value = "contact";
     input.dispatchEvent(new Event("input", { bubbles: true }));
