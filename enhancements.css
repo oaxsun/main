@@ -1,7 +1,9 @@
 .hero-console-title{
-  font-family:inherit;
-  font-weight:600;
-  letter-spacing:-.02em;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+  font-weight:400;
+  font-size:clamp(28px,3.7vw,52px);
+  line-height:1.08;
+  letter-spacing:0;
 }
 
 .sol-value{
@@ -98,6 +100,7 @@
 }
 
 @media (max-width:760px){
+  .hero-console-title{font-size:clamp(27px,8vw,40px)}
   .solutions-cta{align-items:flex-start;flex-direction:column}
   .solutions-cta-btn{width:100%;min-width:0}
 }
