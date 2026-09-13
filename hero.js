@@ -2,23 +2,7 @@
   const termBody = document.getElementById("termBody");
   const input = document.getElementById("cmd");
   const suggest = document.getElementById("suggest");
-
-  // Mobile: tap ONLY on the command bar opens the menu (avoid iOS zoom on input)
   const termInputEl = document.getElementById("termInput");
-  function termInputTapBound(){
-    if(!isTouch || !termInputEl) return;
-    termInputEl.addEventListener("pointerdown", (e)=>{
-      e.preventDefault();
-      if (busy) return;
-
-      input.blur();
-      input.value = "";
-      input.placeholder = MOBILE_HINT;
-      openSuggest([...COMMANDS]);
-    }, { passive:false });
-  }
-
-  // === Intro flow (loader -> splash -> enter -> loader -> app) ===
   const appEl = document.getElementById("app");
   const introEl = document.getElementById("intro");
   const introLoader = document.getElementById("introLoader");
@@ -27,124 +11,24 @@
   const introBar = document.getElementById("introBar");
   const introPct = document.getElementById("introPct");
 
-  function renderIntroBar(pct, width=18){
-    const filled = Math.round((pct/100)*width);
-    const empty = Math.max(0, width - filled);
-    return "[" + "█".repeat(filled) + "░".repeat(empty) + "]";
-  }
+  const COMMANDS = ["about", "solutions", "clients", "contact", "help"];
+  const HIDDEN_COMMANDS = ["blog"];
+  const ALL_COMMANDS = [...COMMANDS, ...HIDDEN_COMMANDS];
 
-  async function runIntroLoader(label="initializing", ms=1100){
-    if(!introLoader) return;
-    // update label inside loader (3rd span is the label container)
-    const spans = introLoader.querySelectorAll(".label");
-    if(spans && spans[2]) spans[2].textContent = " " + label + " ";
-    introLoader.style.display = "grid";
-    if(introSplash) introSplash.style.display = "none";
-
-    const tick = 55;
-    const steps = Math.max(10, Math.floor(ms / tick));
-    let i = 0;
-    let pct = 0;
-
-    const width = (window.matchMedia?.("(max-width: 520px)").matches) ? 12 : 18;
-    introBar.textContent = renderIntroBar(0, width);
-    introPct.textContent = "0%";
-
-    const timer = setInterval(()=>{
-      i++;
-      pct = Math.min(100, Math.round((i/steps)*100));
-      introBar.textContent = renderIntroBar(pct, width);
-      introPct.textContent = pct + "%";
-      if(pct >= 100) clearInterval(timer);
-    }, tick);
-
-    await new Promise(r=>setTimeout(r, ms));
-    clearInterval(timer);
-    introBar.textContent = renderIntroBar(100, width);
-    introPct.textContent = "100%";
-    await new Promise(r=>setTimeout(r, 220));
-  }
-
-  function introParallaxBind(){
-    if(!introEl || !introSplash) return;
-    const fine = window.matchMedia?.("(pointer: fine)").matches;
-    if(!fine) return;
-
-    function onMove(e){
-      if(introEl.style.display === "none") return;
-      const rect = introSplash.getBoundingClientRect();
-      const cx = rect.left + rect.width/2;
-      const cy = rect.top + rect.height/2;
-      const dx = (e.clientX - cx) / (rect.width/2);
-      const dy = (e.clientY - cy) / (rect.height/2);
-      // Bend opposite cursor (invert)
-      const rx = (-dy * 2.2);
-      const ry = (-dx * 3.0);
-      introSplash.style.setProperty("--introTX", ry.toFixed(2) + "deg");
-      introSplash.style.setProperty("--introTY", rx.toFixed(2) + "deg");
-    }
-    function onLeave(){
-      introSplash.style.setProperty("--introTX","0deg");
-      introSplash.style.setProperty("--introTY","0deg");
-    }
-
-    window.addEventListener("pointermove", onMove, { passive:true });
-    window.addEventListener("pointerleave", onLeave, { passive:true });
-  }
-
-  async function showSplash(){
-    introLoader.style.display = "none";
-    introSplash.style.display = "block";
-    introSplash.setAttribute("aria-hidden","false");
-  }
-
-  async function enterApp(){
-    await runIntroLoader("loading console", 900);
-    // Reveal app
-    introEl.style.display = "none";
-    appEl.style.opacity = "1";
-    appEl.style.pointerEvents = "auto";
-    boot();
-    // Start intro loader on first visit
-    (async () => {
-      introParallaxBind();
-      await showSplash();
-
-      // Enter button triggers the console load
-      enterBtn?.addEventListener("click", async (e)=>{
-        e.preventDefault();
-        // Disable button while loading
-        enterBtn.style.pointerEvents = "none";
-        enterBtn.style.opacity = "0.7";
-        await enterApp();
-      });
-    })();
-  }
-
-  const COMMANDS = ["about", "products", "solutions", "contact", "help"];
-
-  const isTouch =
-    window.matchMedia?.("(pointer: coarse)").matches ||
-    "ontouchstart" in window ||
-    navigator.maxTouchPoints > 0;
-
+  const isTouch = window.matchMedia?.("(pointer: coarse)").matches || "ontouchstart" in window || navigator.maxTouchPoints > 0;
   const DESKTOP_HINT = "Press [space] to see commands.";
   const MOBILE_HINT = "Select a command";
-
-  // Set hint per device
-  input.placeholder = isTouch ? MOBILE_HINT : DESKTOP_HINT;
-
-  termInputTapBound();
-
-  if (isTouch) {
-    input.setAttribute("readonly", "");
-    input.setAttribute("inputmode", "none");
-  }
 
   let activeIndex = -1;
   let currentMatches = [];
   let closeTimer = null;
   let busy = false;
+
+  input.placeholder = isTouch ? MOBILE_HINT : DESKTOP_HINT;
+  if (isTouch) {
+    input.setAttribute("readonly", "");
+    input.setAttribute("inputmode", "none");
+  }
 
   const ASCII = {
     ABOUT: ` █████╗ ██████╗  ██████╗ ██╗   ██╗████████╗
@@ -153,36 +37,18 @@
 ██╔══██║██╔══██╗██║   ██║██║   ██║   ██║
 ██║  ██║██████╔╝╚██████╔╝╚██████╔╝   ██║
 ╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚═════╝    ╚═╝`,
-    SKYMAP: `███████╗██╗  ██╗██╗   ██╗███╗   ███╗ █████╗ ██████╗
-██╔════╝██║ ██╔╝╚██╗ ██╔╝████╗ ████║██╔══██╗██╔══██╗
-███████╗█████╔╝  ╚████╔╝ ██╔████╔██║███████║██████╔╝
-╚════██║██╔═██╗   ╚██╔╝  ██║╚██╔╝██║██╔══██║██╔═══╝
-███████║██║  ██╗   ██║   ██║ ╚═╝ ██║██║  ██║██║
-╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝`,
     SOLUTIONS: `███████╗ ██████╗ ██╗     ██╗   ██╗████████╗██╗ ██████╗ ███╗   ██╗███████╗
 ██╔════╝██╔═══██╗██║     ██║   ██║╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
 ███████╗██║   ██║██║     ██║   ██║   ██║   ██║██║   ██║██╔██╗ ██║███████╗
 ╚════██║██║   ██║██║     ██║   ██║   ██║   ██║██║   ██║██║╚██╗██║╚════██║
 ███████║╚██████╔╝███████╗╚██████╔╝   ██║   ██║╚██████╔╝██║ ╚████║███████║
 ╚══════╝ ╚═════╝ ╚══════╝ ╚═════╝    ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝`,
-    PRODUCTS: `██████╗ ██████╗  ██████╗ ██████╗ ██╗   ██╗ ██████╗████████╗███████╗
-██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██║   ██║██╔════╝╚══██╔══╝██╔════╝
-██████╔╝██████╔╝██║   ██║██║  ██║██║   ██║██║        ██║   ███████╗
-██╔═══╝ ██╔══██╗██║   ██║██║  ██║██║   ██║██║        ██║   ╚════██║
-██║     ██║  ██║╚██████╔╝██████╔╝╚██████╔╝╚██████╗   ██║   ███████║
-╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝  ╚═════╝   ╚═╝   ╚══════╝`,
-    SERVICES: `███████╗███████╗██████╗ ██╗   ██╗██╗ ██████╗███████╗███████╗
-██╔════╝██╔════╝██╔══██╗██║   ██║██║██╔════╝██╔════╝██╔════╝
-███████╗█████╗  ██████╔╝██║   ██║██║██║     █████╗  ███████╗
-╚════██║██╔══╝  ██╔══██╗╚██╗ ██╔╝██║██║     ██╔══╝  ╚════██║
-███████║███████╗██║  ██║ ╚████╔╝ ██║╚██████╗███████╗███████║
-╚══════╝╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚═╝ ╚═════╝╚══════╝╚══════╝`,
-    WORK: `██╗    ██╗ ██████╗ ██████╗ ██╗  ██╗
-██║    ██║██╔═══██╗██╔══██╗██║ ██╔╝
-██║ █╗ ██║██║   ██║██████╔╝█████╔╝
-██║███╗██║██║   ██║██╔══██╗██╔═██╗
-╚███╔███╔╝╚██████╔╝██║  ██║██║  ██╗
- ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝`,
+    CLIENTS: ` ██████╗██╗     ██╗███████╗███╗   ██╗████████╗███████╗
+██╔════╝██║     ██║██╔════╝████╗  ██║╚══██╔══╝██╔════╝
+██║     ██║     ██║█████╗  ██╔██╗ ██║   ██║   ███████╗
+██║     ██║     ██║██╔══╝  ██║╚██╗██║   ██║   ╚════██║
+╚██████╗███████╗██║███████╗██║ ╚████║   ██║   ███████║
+ ╚═════╝╚══════╝╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝`,
     CONTACT: ` ██████╗ ██████╗ ███╗   ██╗████████╗ █████╗  ██████╗████████╗
 ██╔════╝██╔═══██╗████╗  ██║╚══██╔══╝██╔══██╗██╔════╝╚══██╔══╝
 ██║     ██║   ██║██╔██╗ ██║   ██║   ███████║██║        ██║
@@ -200,21 +66,17 @@
 █████╗  ██████╔╝██████╔╝██║   ██║██████╔╝
 ██╔══╝  ██╔══██╗██╔══██╗██║   ██║██╔══██╗
 ███████╗██║  ██║██║  ██║╚██████╔╝██║  ██║
-╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝`,
+╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝`
   };
 
   function escapeHtml(s) {
-    return s
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+    return String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
   }
 
-  function scrollToBottom(){ termBody.scrollTop = termBody.scrollHeight; }
+  function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+  function scrollToBottom() { termBody.scrollTop = termBody.scrollHeight; }
 
-  function line(html, cls="line"){
+  function line(html, cls = "line") {
     const el = document.createElement("div");
     el.className = cls;
     el.innerHTML = html;
@@ -223,7 +85,7 @@
     return el;
   }
 
-  function blockContainer(){
+  function blockContainer() {
     const el = document.createElement("div");
     el.className = "block fax";
     termBody.appendChild(el);
@@ -231,315 +93,265 @@
     return el;
   }
 
-  function echoCommand(cmd){
-    line(`<span class="accent">></span> ${escapeHtml(cmd)}`);
-  }
-
-  function asciiTitle(name){
-    const key = name.toUpperCase();
-    const art = ASCII[key] || ASCII.ERROR;
+  function asciiTitle(name) {
+    const art = ASCII[name.toUpperCase()] || ASCII.ERROR;
     return `<pre class="section-ascii">${escapeHtml(art)}</pre>`;
   }
 
-  function openSuggest(matches){
+  function echoCommand(cmd) {
+    line(`<span class="accent">&gt;</span> ${escapeHtml(cmd)}`);
+  }
+
+  function openSuggest(matches) {
     currentMatches = matches;
     activeIndex = matches.length ? 0 : -1;
-
     suggest.innerHTML = "";
-    for(let i=0;i<matches.length;i++){
-      const c = matches[i];
+
+    matches.forEach((c, i) => {
       const item = document.createElement("div");
-      item.className = "item" + (i===activeIndex ? " active" : "");
-      item.setAttribute("role","option");
-      item.setAttribute("aria-selected", i===activeIndex ? "true" : "false");
+      item.className = "item" + (i === activeIndex ? " active" : "");
+      item.setAttribute("role", "option");
+      item.setAttribute("aria-selected", i === activeIndex ? "true" : "false");
       item.innerHTML = `<span>/${escapeHtml(c)}</span>`;
-      item.addEventListener("pointerdown",(e)=>{
+      item.addEventListener("pointerdown", e => {
         e.preventDefault();
         submit(c);
       });
       suggest.appendChild(item);
-    }
+    });
 
-    if(matches.length) suggest.classList.add("open");
-    else suggest.classList.remove("open");
+    suggest.classList.toggle("open", matches.length > 0);
   }
 
-  function closeSuggestSoon(){
+  function closeSuggestSoon() {
     clearTimeout(closeTimer);
-    closeTimer = setTimeout(()=>suggest.classList.remove("open"), 120);
+    closeTimer = setTimeout(() => suggest.classList.remove("open"), 120);
   }
 
-  function setActive(i){
-    if(!currentMatches.length) return;
+  function setActive(i) {
+    if (!currentMatches.length) return;
     activeIndex = (i + currentMatches.length) % currentMatches.length;
-    [...suggest.querySelectorAll(".item")].forEach((el,idx)=>{
-      el.classList.toggle("active", idx===activeIndex);
-      el.setAttribute("aria-selected", idx===activeIndex ? "true" : "false");
+    [...suggest.querySelectorAll(".item")].forEach((el, idx) => {
+      el.classList.toggle("active", idx === activeIndex);
+      el.setAttribute("aria-selected", idx === activeIndex ? "true" : "false");
     });
   }
 
-  function refreshSuggest(){
+  function refreshSuggest() {
     const v = input.value.trim().toLowerCase();
-    const matches = v ? COMMANDS.filter(c=>c.startsWith(v)) : [...COMMANDS];
+    const matches = v ? COMMANDS.filter(c => c.startsWith(v)) : [...COMMANDS];
     openSuggest(matches);
   }
 
-  function disableInput(disabled){
+  function disableInput(disabled) {
     busy = disabled;
     input.disabled = disabled;
-    if(disabled) input.blur();
+    if (disabled) input.blur();
   }
 
-  function renderBar(pct, width){
-    const filled = Math.round((pct/100)*width);
-    const empty = Math.max(0, width - filled);
-    return "[" + "█".repeat(filled) + "░".repeat(empty) + "]";
+  function renderBar(pct, width) {
+    const filled = Math.round((pct / 100) * width);
+    return "[" + "█".repeat(filled) + "░".repeat(Math.max(0, width - filled)) + "]";
   }
 
-  function loaderBarWidth(){
-    // Smaller on mobile to avoid overflow
-    return isTouch ? 10 : 18;
+  function loaderBarWidth() { return isTouch ? 10 : 18; }
+
+  async function runIntroLoader(label = "initializing", ms = 1100) {
+    if (!introLoader) return;
+    const spans = introLoader.querySelectorAll(".label");
+    if (spans[2]) spans[2].textContent = ` ${label} `;
+    introLoader.style.display = "grid";
+    introSplash.style.display = "none";
+
+    const width = window.matchMedia?.("(max-width: 520px)").matches ? 12 : 18;
+    const started = performance.now();
+
+    await new Promise(resolve => {
+      function frame(now) {
+        const pct = Math.min(100, Math.round(((now - started) / ms) * 100));
+        introBar.textContent = renderBar(pct, width);
+        introPct.textContent = pct + "%";
+        if (pct >= 100) resolve();
+        else requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    });
+
+    await wait(180);
   }
 
-  function showRetroLoader(taskLabel){
+  function introParallaxBind() {
+    if (!introEl || !introSplash || !window.matchMedia?.("(pointer: fine)").matches) return;
+    window.addEventListener("pointermove", e => {
+      if (introEl.style.display === "none") return;
+      const rect = introSplash.getBoundingClientRect();
+      const dx = (e.clientX - (rect.left + rect.width / 2)) / Math.max(1, rect.width / 2);
+      const dy = (e.clientY - (rect.top + rect.height / 2)) / Math.max(1, rect.height / 2);
+      introSplash.style.setProperty("--introTX", (-dx * 3).toFixed(2) + "deg");
+      introSplash.style.setProperty("--introTY", (-dy * 2.2).toFixed(2) + "deg");
+    }, { passive: true });
+  }
+
+  async function showSplash() {
+    introLoader.style.display = "none";
+    introSplash.style.display = "block";
+    introSplash.setAttribute("aria-hidden", "false");
+  }
+
+  async function enterApp() {
+    enterBtn.style.pointerEvents = "none";
+    enterBtn.style.opacity = "0.7";
+    await runIntroLoader("loading console", 850);
+    introEl.style.display = "none";
+    appEl.style.opacity = "1";
+    appEl.style.pointerEvents = "auto";
+    await boot();
+  }
+
+  function showRetroLoader(taskLabel) {
     const wrap = document.createElement("div");
     wrap.className = "loader";
-    wrap.innerHTML = `
-      <span class="label dim">·</span>
-      <span class="label">sys</span>
-      <span class="label"> ${escapeHtml(taskLabel)} </span>
-      <span class="bar">${renderBar(0, loaderBarWidth())}</span>
-      <span class="pct dim">0%</span>
-    `;
+    wrap.innerHTML = `<span class="label dim">·</span><span class="label">sys</span><span class="label"> ${escapeHtml(taskLabel)} </span><span class="bar">${renderBar(0, loaderBarWidth())}</span><span class="pct dim">0%</span>`;
     termBody.appendChild(wrap);
     scrollToBottom();
-    return {
-      wrap,
-      barEl: wrap.querySelector(".bar"),
-      pctEl: wrap.querySelector(".pct"),
-    };
+    return { wrap, barEl: wrap.querySelector(".bar"), pctEl: wrap.querySelector(".pct") };
   }
 
-  async function runWithLoader(taskLabel, ms=900){
+  async function runWithLoader(taskLabel, ms = 700) {
     disableInput(true);
-
     const { wrap, barEl, pctEl } = showRetroLoader(taskLabel);
-    let pct = 0;
+    const started = performance.now();
 
-    const tick = 55;
-    const steps = Math.max(8, Math.floor(ms / tick));
-    let i = 0;
+    await new Promise(resolve => {
+      function frame(now) {
+        const pct = Math.min(100, Math.round(((now - started) / ms) * 100));
+        barEl.textContent = renderBar(pct, loaderBarWidth());
+        pctEl.textContent = pct + "%";
+        scrollToBottom();
+        if (pct >= 100) resolve();
+        else requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    });
 
-    const timer = setInterval(()=>{
-      i++;
-      pct = Math.min(100, Math.round((i/steps)*100));
-      barEl.textContent = renderBar(pct, loaderBarWidth());
-      pctEl.textContent = pct + "%";
-      scrollToBottom();
-      if(pct >= 100) clearInterval(timer);
-    }, tick);
-
-    await new Promise(r=>setTimeout(r, ms));
-    clearInterval(timer);
-    barEl.textContent = renderBar(100, loaderBarWidth());
-    pctEl.textContent = "100%";
-
-    await new Promise(r=>setTimeout(r, 220));
+    await wait(120);
     wrap.remove();
-
     disableInput(false);
   }
 
-  async function faxPrint(cmd, titleKey, linesArr){
-    await runWithLoader(`switch ${cmd} app`, 950);
-
+  async function faxPrint(cmd, titleKey, linesArr) {
+    await runWithLoader(`switch ${cmd} app`, 720);
     const box = blockContainer();
     box.insertAdjacentHTML("beforeend", asciiTitle(titleKey));
-
-    let delay = 60;
-    for(const l of linesArr){
+    let delay = 50;
+    for (const html of linesArr) {
       const ln = document.createElement("div");
       ln.className = "line fax-line";
       ln.style.animationDelay = delay + "ms";
-      ln.innerHTML = l;
+      ln.innerHTML = html;
       box.appendChild(ln);
-      delay += 90;
+      delay += 80;
     }
     scrollToBottom();
   }
 
-  async function boot(){
+  async function boot() {
     termBody.innerHTML = "";
     line(`<span class="dim">Booting OAXSUN TECHNOLOGIES...</span>`);
-    await wait(900);
-
-    line(`<span class="dim">Connecting to port 0000...</span>`);
-    await wait(900);
-
-    line(`<span class="dim">Connection successfull</span>`);
-    await wait(500);
-
-    line(`<span class="dim">App started</span>`);
-    await wait(400);
+    await wait(420);
+    line(`<span class="dim">Loading digital systems layer...</span>`);
+    await wait(420);
+    line(`<span class="dim">Connection successful</span>`);
+    await wait(280);
 
     const box = blockContainer();
-    box.innerHTML = `<div class="line">Welcome to <span class="accent">Oaxsun Technologies</span>. Here you can discover who we are and what we have to offer you.</div><div class="line">&nbsp;</div><div class="line dim">Available commands:</div><div class="line"><span class="accent">/about</span> <span class="accent">/products</span> <span class="accent">/solutions</span> <span class="accent">/contact</span> <span class="accent">/help</span></div><div class="line">&nbsp;</div><div class="line dim">Enter a command to start. . .</div>`;
+    box.innerHTML = `
+      <div class="hero-console-kicker">OAXSUN TECHNOLOGIES</div>
+      <div class="hero-console-title">Digital systems engineered for growth.</div>
+      <div class="hero-console-copy">We design and build web platforms, applications, business systems and custom technology that help companies operate better, scale faster and create new digital capabilities.</div>
+      <div class="line">&nbsp;</div>
+      <div class="line dim">Available commands:</div>
+      <div class="line"><span class="accent">/about</span> <span class="accent">/solutions</span> <span class="accent">/clients</span> <span class="accent">/contact</span> <span class="accent">/help</span></div>
+      <div class="line">&nbsp;</div>
+      <div class="line dim">Enter a command to continue. . .</div>`;
+    scrollToBottom();
   }
 
-  function wait(ms){ return new Promise(r=>setTimeout(r, ms)); }
+  async function respond(cmdRaw) {
+    const cmd = cmdRaw.trim().toLowerCase().replace(/^\//, "");
+    if (!cmd) return;
 
-  async function respond(cmdRaw){
-    const cmd = cmdRaw.trim().toLowerCase();
-    if(!cmd) return;
+    if (cmd === "blog") {
+      echoCommand(cmd);
+      await runWithLoader("opening knowledge base", 520);
+      window.location.href = "/blog/";
+      return;
+    }
 
-    if(!COMMANDS.includes(cmd)){
+    if (!COMMANDS.includes(cmd)) {
       await faxPrint(cmd, "ERROR", [
         `<span class="accent">Command not found:</span> <span class="dim">${escapeHtml(cmd)}</span>`,
-        `<span class="dim">Try:</span> <span class="accent">help</span> <span class="dim">or</span> <span class="accent">help</span>`
+        `<span class="dim">Type</span> <span class="accent">help</span> <span class="dim">to view available commands.</span>`
       ]);
       return;
     }
 
-    switch(cmd){
-
+    switch (cmd) {
       case "about":
         await faxPrint("about", "ABOUT", [
-          `<span class="dim">We are</span> <span class="accent">Oaxsun Technologies</span><span class="dim">, proudly founded in</span> <span class="accent">Toronto, Canada</span><span class="dim">.</span>`,
-          `<span class="dim">We are a software development company focused on delivering</span> <span class="accent">solutions</span><span class="dim">—not just code.</span>`,
-          `<span class="dim">From idea to launch, we help teams ship faster with clean architecture, modern UI, and performance-first engineering.</span>`,
-          `<span class="dim">We care about clarity, velocity, and measurable impact: better conversions, better retention, better search visibility.</span>`,
+          `<span class="dim">We are</span> <span class="accent">Oaxsun Technologies</span><span class="dim">, a technology studio founded in Toronto, Canada.</span>`,
+          `<span class="dim">We build digital systems for companies that want to operate better, scale faster and create new digital capabilities.</span>`,
+          `<span class="dim">Our work combines</span> <span class="accent">strategy, design, engineering and infrastructure</span><span class="dim"> into practical systems built around real business needs.</span>`,
+          `<span class="dim">We focus on clarity, performance, maintainability and measurable business impact.</span>`,
           `<span class="dim">&nbsp;</span>`,
-          `<span class="accent">Mission:</span> <span class="dim">Build reliable software that helps businesses grow through speed, clarity, and measurable results.</span>`,
-          `<span class="dim">&nbsp;</span>`,
-          `<span class="accent">Vision:</span> <span class="dim">Become a trusted global partner for modern web, mobile, and SEO solutions—crafted with care and performance-first thinking.</span>`
-        ]);
-        break;
-
-      case "products":
-        await faxPrint("products", "PRODUCTS", [
-          `<p class="products-description">Explore our online products built by Oaxsun Technologies.</p><div class="products-grid">
-            <article class="product-card product-featured">
-              <div class="product-media has-image">
-                <img src="assets/products/skymap-preview.png" alt="SkyMap constellation preview">
-                <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
-              </div>
-              <div class="product-info">
-                <div class="product-kicker">[MAP]</div>
-                <h3>SKYMAP</h3>
-                <p>Personalized star map generator based on your special moments.</p>
-                <a class="btn product-btn" href="https://skymap.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open SkyMap</a>
-              </div>
-            </article>
-
-            <article class="product-card product-featured">
-              <div class="product-media has-image">
-                <img src="assets/products/korah-preview.png" alt="Korah payments dashboard preview">
-                <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
-              </div>
-              <div class="product-info">
-                <div class="product-kicker">[PAYMENTS]</div>
-                <h3>KORAH</h3>
-                <p>Payment tracking and reminders to confirm what you already paid.</p>
-                <a class="btn product-btn" href="https://korah.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open Korah</a>
-              </div>
-            </article>
-
-            <article class="product-card">
-              <div class="product-media has-image">
-                <img src="assets/products/compresso-preview.png" alt="Compresso PDF compression preview">
-                <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
-              </div>
-              <div class="product-info">
-                <div class="product-kicker">[PDF]</div>
-                <h3>COMPRESSO</h3>
-                <p>Compress PDF files online. Simple, fast and secure.</p>
-                <a class="btn product-btn" href="https://compresso.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open Compresso</a>
-              </div>
-            </article>
-
-            <article class="product-card">
-              <div class="product-media has-image">
-                <img src="assets/products/gramatia-preview.png" alt="Gramatia document review preview">
-                <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
-              </div>
-              <div class="product-info">
-                <div class="product-kicker">[AI]</div>
-                <h3>GRAMATIA</h3>
-                <p>AI-powered spelling and grammar assistant for flawless writing.</p>
-                <a class="btn product-btn" href="https://gramatia.oaxsun.tech" target="_blank" rel="noopener noreferrer">Open Gramatia</a>
-              </div>
-            </article>
-          </div>`
+          `<span class="accent">Mission:</span> <span class="dim">Engineer reliable digital systems that remove friction and create room for growth.</span>`,
+          `<span class="accent">Approach:</span> <span class="dim">Discover → Design → Build → Deploy → Evolve.</span>`
         ]);
         break;
 
       case "solutions":
         await faxPrint("solutions", "SOLUTIONS", [
-          `<span class="dim">We design and build end-to-end digital products—fast, scalable, and performance-first.</span>`,
+          `<span class="dim">Technology should solve operational problems, unlock growth and stay maintainable after launch.</span>`,
           `<div class="sol-grid">
-            <div class="sol-card">
-              <div class="sol-head">
-                <span class="sol-tag">[WEB]</span>
-                <span class="sol-title">LANDING / E-COMMERCE</span>
-                <span class="sol-status">READY</span>
-              </div>
-              <div class="sol-body">
-                <div>+ Design & build fast</div>
-                <div>+ Performance + Core Web Vitals</div>
-                <div>+ Integrations: forms / analytics</div>
-              </div>
-              <div class="sol-cmd"><span class="dim">cmd:</span> <span class="accent">/contact</span> <span class="dim">--service web</span></div>
-            </div>
-
-            <div class="sol-card">
-              <div class="sol-head">
-                <span class="sol-tag">[APP]</span>
-                <span class="sol-title">MOBILE / WEB APP</span>
-                <span class="sol-status">READY</span>
-              </div>
-              <div class="sol-body">
-                <div>+ MVPs, dashboards, admin panels</div>
-                <div>+ Auth, payments, APIs</div>
-                <div>+ Deploy & maintenance</div>
-              </div>
-              <div class="sol-cmd"><span class="dim">cmd:</span> <span class="accent">/contact</span> <span class="dim">--service app</span></div>
-            </div>
-
-            <div class="sol-card">
-              <div class="sol-head">
-                <span class="sol-tag">[SEO]</span>
-                <span class="sol-title">SEARCH OPTIMIZATION</span>
-                <span class="sol-status">READY</span>
-              </div>
-              <div class="sol-body">
-                <div>+ Technical audit</div>
-                <div>+ Content + structure</div>
-                <div>+ Indexing + analytics</div>
-              </div>
-              <div class="sol-cmd"><span class="dim">cmd:</span> <span class="accent">/contact</span> <span class="dim">--service seo</span></div>
-            </div>
-          </div>`
+            <div class="sol-card"><div class="sol-head"><span class="sol-tag">[WEB]</span><span class="sol-title">WEB SYSTEMS</span><span class="sol-status">READY</span></div><div class="sol-body"><div>+ Websites & digital platforms</div><div>+ E-commerce ecosystems</div><div>+ Portals, dashboards & internal tools</div></div></div>
+            <div class="sol-card"><div class="sol-head"><span class="sol-tag">[APP]</span><span class="sol-title">SOFTWARE & APPS</span><span class="sol-status">READY</span></div><div class="sol-body"><div>+ Native mobile apps</div><div>+ Custom business software</div><div>+ Admin panels & operational systems</div></div></div>
+            <div class="sol-card"><div class="sol-head"><span class="sol-tag">[INFRA]</span><span class="sol-title">BUSINESS INFRASTRUCTURE</span><span class="sol-status">READY</span></div><div class="sol-body"><div>+ APIs, databases & authentication</div><div>+ Payments & third-party integrations</div><div>+ Cloud, deployment & architecture</div></div></div>
+            <div class="sol-card"><div class="sol-head"><span class="sol-tag">[AI]</span><span class="sol-title">AUTOMATION & AI</span><span class="sol-status">READY</span></div><div class="sol-body"><div>+ Workflow automation</div><div>+ AI integrations</div><div>+ Internal productivity systems</div></div></div>
+            <div class="sol-card"><div class="sol-head"><span class="sol-tag">[GROWTH]</span><span class="sol-title">DIGITAL GROWTH</span><span class="sol-status">READY</span></div><div class="sol-body"><div>+ Technical SEO</div><div>+ Performance & Core Web Vitals</div><div>+ Analytics & conversion foundations</div></div></div>
+          </div>`,
+          `<div class="sol-cmd"><span class="dim">Have something worth building?</span> <span class="accent">/contact</span></div>`
         ]);
         break;
 
-      case "work":
-        await faxPrint("work", "WORK", [
-          `<span class="dim">Selected projects and case studies.</span>`,
-          `<span class="dim">(placeholder)</span>`
+      case "clients":
+        await faxPrint("clients", "CLIENTS", [
+          `<span class="dim">Selected brands we work with.</span>`,
+          `<div class="clients-marquee" aria-label="Oaxsun clients"><div class="clients-track">
+            <div class="client-logo client-nautica">NAUTICA <span>HOME</span></div>
+            <div class="client-logo client-hacker">HACKER <span>KITCHENS</span></div>
+            <div class="client-logo client-glick">CASA GLICK</div>
+            <div class="client-logo client-duelazo">DUELAZO.MX</div>
+            <div class="client-logo client-nautica" aria-hidden="true">NAUTICA <span>HOME</span></div>
+            <div class="client-logo client-hacker" aria-hidden="true">HACKER <span>KITCHENS</span></div>
+            <div class="client-logo client-glick" aria-hidden="true">CASA GLICK</div>
+            <div class="client-logo client-duelazo" aria-hidden="true">DUELAZO.MX</div>
+          </div></div>`
         ]);
         break;
 
       case "contact":
         await faxPrint("contact", "CONTACT", [
+          `<span class="accent">Have something worth building?</span>`,
+          `<span class="dim">Tell us what you are trying to create, improve or automate. We will help define the right technical path.</span>`,
           `<span class="dim">Email:</span> <a class="accent-link" href="mailto:hello@oaxsun.tech">hello@oaxsun.tech</a>`,
-          `<span class="dim">Tell us what you are building and we will reply with the next steps.</span>`
+          `<a class="btn" href="mailto:hello@oaxsun.tech?subject=Project%20inquiry%20for%20Oaxsun%20Technologies">Start a project</a>`
         ]);
         break;
 
       case "help":
         await faxPrint("help", "HELP", [
           `<span class="dim">Commands:</span>`,
-          `<span class="accent">/about</span> <span class="accent">/products</span> <span class="accent">/solutions</span> <span class="accent">/contact</span> <span class="accent">/help</span>`,
+          `<span class="accent">/about</span> <span class="accent">/solutions</span> <span class="accent">/clients</span> <span class="accent">/contact</span> <span class="accent">/help</span>`,
           `<span class="dim">&nbsp;</span>`,
           `<span class="dim">OAXSUN Technologies 2026 (c) All rights reserved.</span>`
         ]);
@@ -547,104 +359,78 @@
     }
   }
 
-  function niceLabel(cmd){
-    if(cmd === "products") return "Products";
-    return cmd.charAt(0).toUpperCase() + cmd.slice(1);
-  }
+  function niceLabel(cmd) { return cmd.charAt(0).toUpperCase() + cmd.slice(1); }
 
-  async function submit(valueOverride=null){
+  async function submit(valueOverride = null) {
     if (busy) return;
-
     const raw = valueOverride ?? input.value;
-    const cmd = raw.trim().toLowerCase();
-    if(!cmd) return;
+    const cmd = raw.trim().toLowerCase().replace(/^\//, "");
+    if (!cmd) return;
 
-    // Replace the hint with the selected command in BOTH desktop + mobile
     input.value = niceLabel(cmd);
-
-    echoCommand(cmd);
     suggest.classList.remove("open");
 
+    if (cmd !== "blog") echoCommand(cmd);
     await respond(cmd);
-
-    // Desktop clears after run (so user can type again)
-    if (!isTouch) input.value = "";
+    if (!isTouch && cmd !== "blog") input.value = "";
   }
 
-  // Desktop: focus opens dropdown; allow typing
-  input.addEventListener("focus", ()=>{ refreshSuggest(); });
-  input.addEventListener("blur", ()=>closeSuggestSoon());
-  input.addEventListener("input", ()=>{ refreshSuggest(); });
+  if (isTouch && termInputEl) {
+    termInputEl.addEventListener("pointerdown", e => {
+      e.preventDefault();
+      if (busy) return;
+      input.blur();
+      input.value = "";
+      input.placeholder = MOBILE_HINT;
+      openSuggest([...COMMANDS]);
+    }, { passive: false });
+  }
 
-  input.addEventListener("keydown", (e)=>{
-    if(isTouch) return;
+  input.addEventListener("focus", refreshSuggest);
+  input.addEventListener("blur", closeSuggestSoon);
+  input.addEventListener("input", refreshSuggest);
+
+  input.addEventListener("keydown", e => {
+    if (isTouch) return;
     if (busy) { e.preventDefault(); return; }
+    const open = suggest.classList.contains("open") && currentMatches.length;
 
-    const isOpen = suggest.classList.contains("open") && currentMatches.length;
-
-    if(e.key === "Enter"){
+    if (e.key === "Enter") {
       e.preventDefault();
-      if(isOpen && activeIndex >= 0){
-        const typed = input.value.trim().toLowerCase();
-        if(!typed || currentMatches[activeIndex].startsWith(typed)){
-          submit(currentMatches[activeIndex]);
-          return;
-        }
-      }
-      submit();
+      const typed = input.value.trim().toLowerCase().replace(/^\//, "");
+      if (open && activeIndex >= 0 && (!typed || currentMatches[activeIndex].startsWith(typed))) submit(currentMatches[activeIndex]);
+      else submit();
       return;
     }
 
-    if(e.key === "Tab"){
+    if (e.key === "Tab") {
       e.preventDefault();
-      const v = input.value.trim().toLowerCase();
-      const matches = v ? COMMANDS.filter(c=>c.startsWith(v)) : [...COMMANDS];
-      if(matches.length === 1) input.value = matches[0];
-      openSuggest(matches);
+      const v = input.value.trim().toLowerCase().replace(/^\//, "");
+      const visibleMatches = v ? COMMANDS.filter(c => c.startsWith(v)) : [...COMMANDS];
+      if (visibleMatches.length === 1) input.value = visibleMatches[0];
+      openSuggest(visibleMatches);
       return;
     }
 
-    if(e.key === "Escape"){
-      suggest.classList.remove("open");
-      return;
-    }
-
-    if(e.key === "ArrowDown"){
-      e.preventDefault();
-      if(isOpen) setActive(activeIndex + 1);
-      return;
-    }
-
-    if(e.key === "ArrowUp"){
-      e.preventDefault();
-      if(isOpen) setActive(activeIndex - 1);
-      return;
-    }
+    if (e.key === "Escape") suggest.classList.remove("open");
+    if (e.key === "ArrowDown" && open) { e.preventDefault(); setActive(activeIndex + 1); }
+    if (e.key === "ArrowUp" && open) { e.preventDefault(); setActive(activeIndex - 1); }
   });
 
-  // Space opens dropdown (desktop only)
-  document.addEventListener("keydown", (e)=>{
-    if(isTouch) return;
-    if (busy) return;
-    if(e.code !== "Space") return;
-    if(document.activeElement === input) return;
+  document.addEventListener("keydown", e => {
+    if (isTouch || busy || e.code !== "Space" || document.activeElement === input) return;
     e.preventDefault();
     input.focus();
     openSuggest([...COMMANDS]);
-  }, { passive:false });
+  }, { passive: false });
 
-  // Start intro loader on first visit
   (async () => {
     introParallaxBind();
+    await runIntroLoader("initializing", 900);
     await showSplash();
-
-    // Enter button triggers the console load
-    enterBtn?.addEventListener("click", async (e)=>{
+    enterBtn?.addEventListener("click", async e => {
       e.preventDefault();
-      // Disable button while loading
-      enterBtn.style.pointerEvents = "none";
-      enterBtn.style.opacity = "0.7";
       await enterApp();
-    });
+    }, { once: true });
   })();
 })();
