@@ -1,0 +1,160 @@
+.intro-tagline{
+  margin-top:18px;
+  font-size:clamp(10px,1.2vw,13px);
+  letter-spacing:.24em;
+  color:rgba(235,245,255,.58);
+  text-transform:uppercase;
+}
+
+.hero-console-kicker{
+  margin-bottom:10px;
+  font-size:11px;
+  letter-spacing:.24em;
+  color:rgba(0,229,255,.72);
+}
+
+.hero-console-title{
+  max-width:980px;
+  font-size:clamp(24px,4vw,58px);
+  line-height:1.02;
+  letter-spacing:-.045em;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-weight:650;
+  color:rgba(245,250,255,.98);
+  text-shadow:0 0 32px rgba(0,229,255,.08);
+}
+
+.hero-console-copy{
+  max-width:850px;
+  margin-top:18px;
+  font-size:clamp(13px,1.35vw,17px);
+  line-height:1.75;
+  color:rgba(235,245,255,.62);
+}
+
+.sol-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-top:16px;
+}
+
+.sol-card{
+  min-height:160px;
+  border:1px solid rgba(0,229,255,.16);
+  background:linear-gradient(145deg,rgba(0,229,255,.035),rgba(30,144,255,.02));
+  padding:16px;
+  transition:border-color .2s ease,transform .2s ease,background .2s ease;
+}
+
+.sol-card:hover{
+  border-color:rgba(0,229,255,.42);
+  transform:translateY(-2px);
+  background:linear-gradient(145deg,rgba(0,229,255,.07),rgba(30,144,255,.035));
+}
+
+.sol-head{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:10px;
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.sol-tag,.sol-status{
+  color:rgba(0,229,255,.72);
+  font-size:10px;
+  letter-spacing:.12em;
+}
+
+.sol-title{
+  color:rgba(245,250,255,.94);
+  font-size:12px;
+  letter-spacing:.1em;
+}
+
+.sol-body{
+  display:grid;
+  gap:8px;
+  margin-top:14px;
+  color:rgba(235,245,255,.62);
+  line-height:1.45;
+}
+
+.sol-cmd{
+  margin-top:16px;
+}
+
+.clients-marquee{
+  position:relative;
+  overflow:hidden;
+  margin-top:18px;
+  padding:22px 0;
+  border-top:1px solid rgba(0,229,255,.14);
+  border-bottom:1px solid rgba(0,229,255,.14);
+  mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent);
+}
+
+.clients-track{
+  display:flex;
+  width:max-content;
+  gap:18px;
+  animation:oaxClients 24s linear infinite;
+}
+
+.clients-marquee:hover .clients-track{
+  animation-play-state:paused;
+}
+
+.client-logo{
+  min-width:260px;
+  height:110px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:0 28px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.018);
+  color:rgba(245,250,255,.86);
+  font-family:Arial,Helvetica,sans-serif;
+  font-weight:700;
+  font-size:24px;
+  letter-spacing:.03em;
+  filter:grayscale(1);
+  opacity:.74;
+  transition:opacity .2s ease,border-color .2s ease,filter .2s ease;
+}
+
+.client-logo:hover{
+  opacity:1;
+  border-color:rgba(0,229,255,.32);
+  filter:grayscale(0);
+}
+
+.client-nautica{font-weight:400;letter-spacing:.16em}
+.client-nautica span{font-size:11px;letter-spacing:.22em;opacity:.65}
+.client-hacker{font-weight:600;letter-spacing:.06em}
+.client-hacker span{font-size:11px;letter-spacing:.18em;opacity:.6}
+.client-glick{font-family:Georgia,"Times New Roman",serif;font-weight:400;letter-spacing:.08em}
+.client-duelazo{font-style:italic;letter-spacing:-.03em}
+
+@keyframes oaxClients{
+  from{transform:translateX(0)}
+  to{transform:translateX(calc(-50% - 9px))}
+}
+
+@media (max-width:760px){
+  .sol-grid{grid-template-columns:1fr}
+  .hero-console-title{font-size:clamp(25px,9vw,42px)}
+  .hero-console-copy{font-size:13px;line-height:1.65}
+  .client-logo{min-width:210px;height:92px;font-size:20px}
+  .intro-tagline{padding:0 24px;line-height:1.6}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .clients-track{animation:none}
+  .sol-card{transition:none}
+}
