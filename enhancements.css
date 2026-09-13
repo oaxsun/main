@@ -1,19 +1,25 @@
-.hero-console-title{
-  font-family:inherit;
-  font-weight:400;
-  font-size:13px;
-  line-height:1.5;
-  letter-spacing:0;
-  color:rgba(0,229,255,.95);
+.hero-console-kicker,
+.hero-console-title,
+.hero-console-copy{
+  font:inherit;
+  font-size:inherit;
+  font-weight:inherit;
+  line-height:inherit;
+  letter-spacing:inherit;
   text-shadow:none;
 }
 
+.hero-console-kicker{
+  margin-bottom:10px;
+  color:rgba(0,229,255,.72);
+}
+
+.hero-console-title{
+  color:rgba(0,229,255,.95);
+}
+
 .hero-console-copy{
-  font-family:inherit;
-  font-weight:400;
-  font-size:13px;
-  line-height:1.5;
-  letter-spacing:0;
+  margin-top:18px;
   color:var(--muted);
 }
 
