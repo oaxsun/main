@@ -97,6 +97,13 @@
     grid.insertAdjacentElement("afterend", cta);
   }
 
+  function preloadClientLogos() {
+    clientLogos.forEach(logo => {
+      const image = new Image();
+      image.src = logo.src;
+    });
+  }
+
   function enhanceClients() {
     const marquee = termBody.querySelector(".clients-marquee");
     if (!marquee || marquee.dataset.enhanced === "true") return;
@@ -104,7 +111,7 @@
     marquee.dataset.enhanced = "true";
     const logos = clientLogos.concat(clientLogos).map((logo, index) => `
       <div class="client-brand-logo" ${index >= clientLogos.length ? 'aria-hidden="true"' : ''}>
-        <img src="${logo.src}" alt="${index < clientLogos.length ? logo.alt : ''}" loading="lazy">
+        <img src="${logo.src}" alt="${index < clientLogos.length ? logo.alt : ''}" loading="eager" decoding="async">
       </div>
     `).join("");
 
@@ -115,6 +122,8 @@
     enhanceSolutions();
     enhanceClients();
   }
+
+  preloadClientLogos();
 
   const observer = new MutationObserver(applyEnhancements);
   observer.observe(termBody, { childList: true, subtree: true });
