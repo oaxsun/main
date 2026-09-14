@@ -5,6 +5,17 @@
   const suggest = document.getElementById("suggest");
   if (!termBody || !input || !termInput || !suggest) return;
 
+  const clientLogos = [
+    { src: "assets/clients/1.webp", alt: "Volvo" },
+    { src: "assets/clients/2.webp", alt: "Nautica Home" },
+    { src: "assets/clients/3.webp", alt: "Häcker" },
+    { src: "assets/clients/4.webp", alt: "Ron Barajima" },
+    { src: "assets/clients/5.webp", alt: "nika" },
+    { src: "assets/clients/6.webp", alt: "ixina German kitchens" },
+    { src: "assets/clients/7.webp", alt: "Elastómeros Cordaza" },
+    { src: "assets/clients/8.webp", alt: "PLAPERS" }
+  ];
+
   const solutionCopy = {
     "WEB SYSTEMS": {
       value: "Launch faster. Convert better. Scale without rebuilding.",
@@ -86,7 +97,26 @@
     grid.insertAdjacentElement("afterend", cta);
   }
 
-  const observer = new MutationObserver(enhanceSolutions);
+  function enhanceClients() {
+    const marquee = termBody.querySelector(".clients-marquee");
+    if (!marquee || marquee.dataset.enhanced === "true") return;
+
+    marquee.dataset.enhanced = "true";
+    const logos = clientLogos.concat(clientLogos).map((logo, index) => `
+      <div class="client-brand-logo" ${index >= clientLogos.length ? 'aria-hidden="true"' : ''}>
+        <img src="${logo.src}" alt="${index < clientLogos.length ? logo.alt : ''}" loading="lazy">
+      </div>
+    `).join("");
+
+    marquee.innerHTML = `<div class="clients-track clients-track-real">${logos}</div>`;
+  }
+
+  function applyEnhancements() {
+    enhanceSolutions();
+    enhanceClients();
+  }
+
+  const observer = new MutationObserver(applyEnhancements);
   observer.observe(termBody, { childList: true, subtree: true });
-  enhanceSolutions();
+  applyEnhancements();
 })();
