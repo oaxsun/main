@@ -123,16 +123,20 @@
 
 .clients-track-real{
   align-items:center;
-  gap:52px;
+  gap:76px;
+  animation-duration:42s;
+  will-change:transform;
+  transform:translateZ(0);
 }
 
 .client-brand-logo{
   flex:0 0 auto;
-  min-width:200px;
+  min-width:210px;
   height:78px;
   display:flex;
   align-items:center;
   justify-content:center;
+  opacity:1;
 }
 
 .client-brand-logo img{
@@ -143,12 +147,15 @@
   height:auto;
   object-fit:contain;
   opacity:.5;
+  visibility:visible;
+  backface-visibility:hidden;
+  transform:translateZ(0);
 }
 
 @media (max-width:760px){
   .solutions-cta{align-items:flex-start;flex-direction:column}
   .solutions-cta-btn{width:100%;min-width:0}
-  .clients-track-real{gap:36px}
-  .client-brand-logo{min-width:160px;height:64px}
+  .clients-track-real{gap:52px;animation-duration:46s}
+  .client-brand-logo{min-width:170px;height:64px}
   .client-brand-logo img{max-width:150px;max-height:52px}
 }
