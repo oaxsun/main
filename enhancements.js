@@ -60,6 +60,16 @@
     input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", code: "Enter", bubbles: true }));
   }
 
+  function scrollSectionHeadingToTop(box) {
+    const heading = box?.querySelector(".section-ascii");
+    if (!heading) return;
+
+    const bodyRect = termBody.getBoundingClientRect();
+    const headingRect = heading.getBoundingClientRect();
+    const exactTop = termBody.scrollTop + (headingRect.top - bodyRect.top) - 8;
+    termBody.scrollTo({ top: Math.max(0, exactTop), behavior: "auto" });
+  }
+
   function positionNewestSectionAtTop() {
     const blocks = [...termBody.querySelectorAll(".block.fax")];
     const box = blocks.at(-1);
@@ -71,11 +81,11 @@
     box.dataset.sectionPositioned = "true";
 
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        const top = Math.max(0, box.offsetTop - 8);
-        termBody.scrollTo({ top, behavior: "auto" });
-      });
+      requestAnimationFrame(() => scrollSectionHeadingToTop(box));
     });
+
+    setTimeout(() => scrollSectionHeadingToTop(box), 120);
+    setTimeout(() => scrollSectionHeadingToTop(box), 320);
   }
 
   function enhanceSolutions() {
