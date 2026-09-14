@@ -16,6 +16,12 @@
     { src: "assets/clients/8.webp", alt: "PLAPERS" }
   ];
 
+  clientLogos.forEach(logo => {
+    const preload = new Image();
+    preload.decoding = "async";
+    preload.src = logo.src;
+  });
+
   const solutionCopy = {
     "WEB SYSTEMS": {
       value: "Launch faster. Convert better. Scale without rebuilding.",
@@ -40,10 +46,11 @@
   };
 
   function runContactCommand() {
-    termInput.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true }));
+    const pointerEvent = typeof PointerEvent === "function" ? PointerEvent : Event;
+    termInput.dispatchEvent(new pointerEvent("pointerdown", { bubbles: true, cancelable: true }));
     const contactItem = [...suggest.querySelectorAll(".item")].find(item => item.textContent.trim().toLowerCase() === "/contact");
     if (contactItem) {
-      contactItem.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true }));
+      contactItem.dispatchEvent(new pointerEvent("pointerdown", { bubbles: true, cancelable: true }));
       return;
     }
 
@@ -51,6 +58,24 @@
     input.value = "contact";
     input.dispatchEvent(new Event("input", { bubbles: true }));
     input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", code: "Enter", bubbles: true }));
+  }
+
+  function positionNewestSectionAtTop() {
+    const blocks = [...termBody.querySelectorAll(".block.fax")];
+    const box = blocks.at(-1);
+    if (!box || box.dataset.sectionPositioned === "true") return;
+
+    const heading = box.querySelector(".section-ascii");
+    if (!heading) return;
+
+    box.dataset.sectionPositioned = "true";
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const top = Math.max(0, box.offsetTop - 8);
+        termBody.scrollTo({ top, behavior: "auto" });
+      });
+    });
   }
 
   function enhanceSolutions() {
@@ -97,13 +122,6 @@
     grid.insertAdjacentElement("afterend", cta);
   }
 
-  function preloadClientLogos() {
-    clientLogos.forEach(logo => {
-      const image = new Image();
-      image.src = logo.src;
-    });
-  }
-
   function enhanceClients() {
     const marquee = termBody.querySelector(".clients-marquee");
     if (!marquee || marquee.dataset.enhanced === "true") return;
@@ -111,7 +129,7 @@
     marquee.dataset.enhanced = "true";
     const logos = clientLogos.concat(clientLogos).map((logo, index) => `
       <div class="client-brand-logo" ${index >= clientLogos.length ? 'aria-hidden="true"' : ''}>
-        <img src="${logo.src}" alt="${index < clientLogos.length ? logo.alt : ''}" loading="eager" decoding="async">
+        <img src="${logo.src}" alt="${index < clientLogos.length ? logo.alt : ''}" decoding="async" fetchpriority="high">
       </div>
     `).join("");
 
@@ -121,9 +139,8 @@
   function applyEnhancements() {
     enhanceSolutions();
     enhanceClients();
+    positionNewestSectionAtTop();
   }
-
-  preloadClientLogos();
 
   const observer = new MutationObserver(applyEnhancements);
   observer.observe(termBody, { childList: true, subtree: true });
